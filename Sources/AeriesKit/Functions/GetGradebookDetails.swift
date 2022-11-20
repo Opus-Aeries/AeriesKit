@@ -195,8 +195,10 @@ extension AeriesKit {
             let segments = splitDataToSegments(sourceText)
 
             for segment in segments {
-                if !segment.contains("tinymode FullWidth CardView") {
-
+                if segment.contains("tinymode FullWidth CardView")
+                && segment.contains("<div class=\"TextHeading\">")
+                && segment.contains("<div class=\"TextSubSectionCategory\"><i class=\"fa fa-file-text-o\" title=\"Formative\" aria-hidden=\"true\"></i>"){
+                    print("getting segment")
                     finalGradebook.append(segmentToGradebook(segment))
                 }
             }

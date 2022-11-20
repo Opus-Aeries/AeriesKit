@@ -104,6 +104,7 @@ extension AeriesKit {
 
                 completion(.success(()))
             } else {
+                print(jsonStringRef)
                 completion(.failure(AeriesError.invalidLogin))
             }
         }
