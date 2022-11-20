@@ -132,6 +132,25 @@ extension AeriesKit {
             return data.split(using: "(</tr>)".r!)
         }
 
+        func makeSearchRevised(_ start: String, _ end: String, type: String = ".") -> String {
+            do {
+                let input = "My name is Taylor Swift"
+                let regex = try NSRegularExpression(pattern: "My name is (.*)", options: NSRegularExpression.Options.caseInsensitive)
+                let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+
+                if let match = matches.first {
+                    let range = match.range(at:1)
+                    if let swiftRange = Range(range, in: input) {
+                        let name = input[swiftRange]
+                        return name
+                    }
+                }
+            } catch {
+                print(error)
+            }
+            return ""
+        }
+
         func segmentToGradebook(_ segment: String) -> AeriesGradeBookEntry {
             var number = 99999
             var description = ""
@@ -150,7 +169,8 @@ extension AeriesKit {
             description = nameNumber.1
 
             // Find Category
-            category = makeSearch(categorySearch, searchEnd).r?.findFirst(in: segment)?.matched ?? "unknown"
+            category = makeSearchRevised(categorySearch, searchEnd)
+//          makeSearch(categorySearch, searchEnd).r?.findFirst(in: segment)?.matched ?? "unknown"
 
             // Find Score
             score = scoreSearch(segment)
@@ -162,7 +182,7 @@ extension AeriesKit {
             percent = makeSearch( percentSearch(number), "</span>").r?.findFirst(in: segment)?.matched
 
             // Find Comment
-            category = makeSearch(commentSearch, searchEnd).r?.findFirst(in: segment)?.matched ?? ""
+            comment = makeSearch(commentSearch, searchEnd).r?.findFirst(in: segment)?.matched ?? ""
 
             // Find Date Completed
             dateCompleted = "(?<=<span class=\"TextSubSection\">Date Completed:</span> )[^\n\r]*".r?.findFirst(in: segment)?.matched
@@ -194,6 +214,7 @@ extension AeriesKit {
             var finalGradebook: [AeriesGradeBookEntry] = []
             let segments = splitDataToSegments(sourceText)
 
+            
             for segment in segments {
                 if segment.contains("tinymode FullWidth CardView")
                 && segment.contains("<div class=\"TextHeading\">")
