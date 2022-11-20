@@ -34,86 +34,66 @@ extension AeriesKit {
             }
 
             let regex = AeriesRegexGradebook(sourceText: dataString)
-            completion(.success(regex.returnFinalGradebook()))
+            Task {
+                await completion(.success(regex.returnFinalGradebook()))
+            }
 
         }.resume()
     }
 
-    private struct AeriesRegexGradebook {
+    public struct AeriesRegexGradebook {
 
         let sourceText: String
+        let sourceTextCount: Int
+
+        public init(sourceText: String) {
+            self.sourceText = sourceText
+            self.sourceTextCount = sourceText.count
+        }
 
         func makeSearch(_ start: String, _ end: String, type: String = ".") -> String {
             return "(?<=\(start))(\(type)*?)(?=\(end))"
         }
 
+        func makeSearchRevised(_ start: String, _ end: String, segment: String, length: Int? = nil, type: String = ".") -> String {
+            do {
+                let regex = try NSRegularExpression(pattern: "(?<=\(start))(\(type)*?)(?=\(end))", options: NSRegularExpression.Options.caseInsensitive)
+                let matches = regex.matches(in: segment, options: [], range: NSRange(location: 0, length: length ?? segment.count))
+
+                if let match = matches.first {
+                    let range = match.range(at:1)
+                    if let swiftRange = Range(range, in: segment) {
+                        let name = segment[swiftRange]
+                        return String(name)
+                    }
+                }
+            } catch {
+                print(error)
+            }
+            return ""
+        }
+
+        func makeSearchRevisedCustom(_ regex: String, segment: String, length: Int? = nil, type: String = ".") -> String {
+            do {
+                let regex = try NSRegularExpression(pattern: regex, options: NSRegularExpression.Options.caseInsensitive)
+                let matches = regex.matches(in: segment, options: [], range: NSRange(location: 0, length: length ?? segment.count))
+
+                if let match = matches.first {
+                    let range = match.range(at:0)
+                    if let swiftRange = Range(range, in: segment) {
+                        let name = segment[swiftRange]
+                        return String(name)
+                    }
+                }
+            } catch {
+                print(error)
+            }
+            return ""
+        }
+
         let searchEnd = "</div>"
 
-        func nameAndNumberSearch(_ segment: String) -> (Int, String) {
-            let nameSearch = "<div class=\"TextHeading\">"
-            let result = makeSearch(nameSearch, searchEnd).r!.findFirst(in: segment)!.matched
-
-            let items = result.components(separatedBy: " - ")
-
-            let number = Int(items[0])!
-            let name = items[1]
-
-            return (number, name)
-        }
-
         let categorySearch = "<div class=\"TextSubSectionCategory\"><i class=\"fa fa-file-text-o\" title=\"Formative\" aria-hidden=\"true\"></i>"
-
-        func scoreSearch(_ segment: String) -> AeriesScore? {
-            let start = "<div class=\"FullWidth ScoreCard\">"
-
-            let scoreBlockSearch = makeSearch(start, searchEnd, type: "[\\S\\s]")
-
-            let result = scoreBlockSearch.r!.findFirst(in: sourceText)!
-
-            let first: Int? = Int(makeSearch(
-                "<span style='white-space:nowrap;'>",
-                "</span>",
-                type: "\\d"
-            ).r?.findFirst(in: result.matched )?.matched ?? "")
-
-            let last: Int? = Int(makeSearch(
-                "<span style=';'>",
-                "</span>",
-                type: "\\d"
-            ).r?.findFirst(in: result.matched )?.matched ?? "")
-
-            if first != nil && last != nil {
-                return AeriesScore(pointsReceived: first!, pointsPossible: last!)
-            } else {
-                return nil
-            }
-        }
-
-        func correctSearch(_ segment: String) -> AeriesScore? {
-            let start = "<div class=\"TextSubSection\">Complete</div>"
-
-            let scoreBlockSearch = makeSearch(start, searchEnd, type: "[\\S\\s]")
-
-            let result = scoreBlockSearch.r!.findFirst(in: sourceText)!
-
-            let first: Int? = Int(makeSearch(
-                "<span style=\"white-space:nowrap;\">",
-                "</span>",
-                type: "\\d"
-            ).r?.findFirst(in: result.matched )?.matched ?? "")
-
-            let last: Int? = Int(makeSearch(
-                "<span style=';'>",
-                "</span>",
-                type: "\\d"
-            ).r?.findFirst(in: result.matched )?.matched ?? "")
-
-            if first != nil && last != nil {
-                return AeriesScore(pointsReceived: first!, pointsPossible: last!)
-            } else {
-                return nil
-            }
-        }
 
         func percentSearch(_ number: Int) -> String {
             var n = "\(number)"
@@ -132,26 +112,8 @@ extension AeriesKit {
             return data.split(using: "(</tr>)".r!)
         }
 
-        func makeSearchRevised(_ start: String, _ end: String, type: String = ".") -> String {
-            do {
-                let input = "My name is Taylor Swift"
-                let regex = try NSRegularExpression(pattern: "My name is (.*)", options: NSRegularExpression.Options.caseInsensitive)
-                let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
-
-                if let match = matches.first {
-                    let range = match.range(at:1)
-                    if let swiftRange = Range(range, in: input) {
-                        let name = input[swiftRange]
-                        return name
-                    }
-                }
-            } catch {
-                print(error)
-            }
-            return ""
-        }
-
         func segmentToGradebook(_ segment: String) -> AeriesGradeBookEntry {
+            let segmentLength = segment.count
             var number = 99999
             var description = ""
             var category = ""
@@ -164,34 +126,92 @@ extension AeriesKit {
             var gradingComplete = false
 
             // Find Number and Description
-            let nameNumber = nameAndNumberSearch(segment)
-            number = nameNumber.0
-            description = nameNumber.1
+            let nameSearch = "<div class=\"TextHeading\">"
+            let result = makeSearchRevised(nameSearch, searchEnd, segment: segment, length: segmentLength)
+            print(result)
+            let items = result.components(separatedBy: " - ")
+
+            number = Int(items[0])!
+            description = items[1]
+            print(0)
 
             // Find Category
-            category = makeSearchRevised(categorySearch, searchEnd)
-//          makeSearch(categorySearch, searchEnd).r?.findFirst(in: segment)?.matched ?? "unknown"
+            print(1)
+            category = makeSearchRevised(categorySearch, searchEnd, segment: segment, length: segmentLength)
+
 
             // Find Score
-            score = scoreSearch(segment)
+            print(2)
+            let first1: Int? = Int(makeSearchRevised(
+                "<span style='white-space:nowrap;'>",
+                "</span>",
+                segment: segment,
+                length: segmentLength,
+                type: "\\d"
+            ))
+
+            let last1: Int? = Int(makeSearchRevised(
+                "<span style=';'>",
+                "</span>",
+                segment: segment,
+                length: segmentLength,
+                type: "\\d"
+            ))
+
+            if first1 != nil && last1 != nil {
+                score = AeriesScore(pointsReceived: first1!, pointsPossible: last1!)
+            }
+
 
             // Find Correct
-            correct = correctSearch(segment)
+            print(3)
+            let first2: Int? = Int(makeSearchRevised(
+                "<span style=\"white-space:nowrap;\">",
+                "</span>",
+                segment: segment,
+                length: segmentLength,
+                type: "\\d"
+
+            ))
+
+            let last2: Int? = Int(makeSearchRevised(
+                "<span style=';'>",
+                "</span>",
+                segment: segment,
+                length: segmentLength,
+                type: "\\d"
+            ))
+
+            if first2 != nil && last2 != nil {
+                correct = AeriesScore(pointsReceived: first2!, pointsPossible: last2!)
+            }
+
+
 
             // Find Percent
-            percent = makeSearch( percentSearch(number), "</span>").r?.findFirst(in: segment)?.matched
+            print(4)
+            percent = makeSearchRevised( percentSearch(number), "</span>", segment: segment, length: segmentLength)
 
             // Find Comment
-            comment = makeSearch(commentSearch, searchEnd).r?.findFirst(in: segment)?.matched ?? ""
+            print(5)
+            comment = makeSearchRevised(commentSearch, searchEnd, segment: segment, length: segmentLength)
 
             // Find Date Completed
-            dateCompleted = "(?<=<span class=\"TextSubSection\">Date Completed:</span> )[^\n\r]*".r?.findFirst(in: segment)?.matched
+            print(6)
+            dateCompleted = makeSearchRevisedCustom(
+                "(?<=<span class=\"TextSubSection\">Date Completed:</span> )[^\n\r]*", segment: segment, length: segmentLength
+            )
 
             // Find Date Due
-            dueDate = "(?<=<span class=\"TextSubSection\" style=\"min-width: 90px;\">Due Date:</span> )[^\n\r]*".r?.findFirst(in: segment)?.matched
-
+            print(7)
+            dueDate = makeSearchRevisedCustom(
+                "(?<=<span class=\"TextSubSection\" style=\"min-width: 90px;\">Due Date:</span> )[^\n\r]*", segment: segment, length: segmentLength
+            )
             // Find Grading Completed
-            let grading = "(?<=<span class=\"TextSubSection\">Grading Complete:</span> )[^\n\r]*".r?.findFirst(in: segment)?.matched
+            print(8)
+            let grading = makeSearchRevisedCustom(
+                "(?<=<span class=\"TextSubSection\">Grading Complete:</span> )[^\n\r]*", segment: segment, length: segmentLength
+            )
             if grading == "True" {
                 gradingComplete = true
             }
@@ -210,16 +230,15 @@ extension AeriesKit {
             )
         }
 
-        func returnFinalGradebook() -> [AeriesGradeBookEntry] {
+        public func returnFinalGradebook() async -> [AeriesGradeBookEntry] {
             var finalGradebook: [AeriesGradeBookEntry] = []
             let segments = splitDataToSegments(sourceText)
 
-            
+
             for segment in segments {
                 if segment.contains("tinymode FullWidth CardView")
-                && segment.contains("<div class=\"TextHeading\">")
-                && segment.contains("<div class=\"TextSubSectionCategory\"><i class=\"fa fa-file-text-o\" title=\"Formative\" aria-hidden=\"true\"></i>"){
-                    print("getting segment")
+                    && segment.contains("<div class=\"TextSubSectionCategory\"><i class=\"fa fa-file-text-o\" title=\"Formative\" aria-hidden=\"true\"></i>"){
+                    print("\n\n\ngetting")
                     finalGradebook.append(segmentToGradebook(segment))
                 }
             }
