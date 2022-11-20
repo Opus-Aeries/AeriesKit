@@ -16,7 +16,7 @@ extension AeriesKit {
             case .couldNotConnect:
                 return NSLocalizedString("Could not connect to Aeries SIS.", comment: "Could Not Connect")
             case .invalidLogin:
-                return NSLocalizedString("Unable to login, make sure email/password are correct.", comment: "Invalid Credentials")
+                return NSLocalizedString("Make sure email/password are correct.", comment: "Invalid Credentials")
             case .unableToMakeUrl:
                 return nil
             case .unknown:
