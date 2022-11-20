@@ -102,7 +102,7 @@ extension AeriesKit {
                     finalResult.removeLast()
                 }
 
-                print(finalResult)
+                completion(.success(()))
             } else {
                 completion(.failure(AeriesError.invalidLogin))
             }
