@@ -103,8 +103,9 @@ extension AeriesKit {
                 }
 
                 completion(.success(()))
-            } else {
-                print(dataString)
+            } else if dataString.contains("502 Bad Gateway"){
+                completion(.failure(AeriesError.aeries502))
+            }  else {
                 completion(.failure(AeriesError.invalidLogin))
             }
         }

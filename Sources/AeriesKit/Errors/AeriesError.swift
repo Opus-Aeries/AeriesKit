@@ -8,6 +8,8 @@ extension AeriesKit {
         case invalidLogin
         /// Error when creating the URL from ``AeriesKit/AeriesKit/baseUrl``
         case unableToMakeUrl
+        /// Sometimes Aeries server decides to return a 503 error
+        case aeries502
         /// Unknown Error
         case unknown
 
@@ -19,6 +21,8 @@ extension AeriesKit {
                 return NSLocalizedString("Make sure email/password are correct.", comment: "")
             case .unableToMakeUrl:
                 return nil
+            case .aeries502:
+                return NSLocalizedString("The Aeries server returned (502) Bad Gateway.", comment: "")
             case .unknown:
                 return NSLocalizedString("An unknown error occurred.", comment: "")
             }
