@@ -2,6 +2,12 @@
 <br />
 <div align="center">
   <img src="Assets/Logo-Large-White.png" alt="Logo" width="600">
+  
+  <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="Assets/Logo-Large-Dark.png">
+      <img alt="AeriesKit Logo" src="Assets/Logo-Large-White.png">
+  </picture>
+  
 </div>
 
 # About
