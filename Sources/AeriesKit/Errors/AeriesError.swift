@@ -14,13 +14,13 @@ extension AeriesKit {
         public var errorDescription: String? {
             switch self {
             case .couldNotConnect:
-                return NSLocalizedString("Could not connect to Aeries SIS.", comment: "Could Not Connect")
+                return NSLocalizedString("Could not connect to Aeries SIS.", comment: "")
             case .invalidLogin:
-                return NSLocalizedString("Make sure email/password are correct.", comment: "Invalid Credentials")
+                return NSLocalizedString("Make sure email/password are correct.", comment: "")
             case .unableToMakeUrl:
                 return nil
             case .unknown:
-                return NSLocalizedString("An unknown error occurred.", comment: "Unknown Error")
+                return NSLocalizedString("An unknown error occurred.", comment: "")
             }
         }
     }
