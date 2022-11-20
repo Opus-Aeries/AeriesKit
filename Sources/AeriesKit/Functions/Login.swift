@@ -6,11 +6,15 @@ extension AeriesKit {
     /// - Parameters:
     ///   - email: The user's email to log in
     ///   - password: The user's password to log in
-    public mutating func login(email: String, password: String) throws {
-        var loginError: AeriesError?
+    public mutating func login(
+        email: String,
+        password: String,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
 
         guard let url = URL(string: "\(baseUrl)Student/LoginParent.aspx") else {
-            throw AeriesError.unableToMakeUrl
+            completion(.failure(AeriesError.unableToMakeUrl))
+            return
         }
 
         var request = URLRequest(url: url)
@@ -67,8 +71,13 @@ extension AeriesKit {
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
 
+            guard error == nil else {
+                completion(.failure(error!))
+                return
+            }
+
             guard let data = data else {
-                print(String(describing: error))
+                completion(.failure(AeriesError.couldNotConnect))
                 return
             }
 
@@ -95,17 +104,10 @@ extension AeriesKit {
 
                 print(finalResult)
             } else {
-                loginError = .invalidLogin
+                completion(.failure(AeriesError.invalidLogin))
             }
         }
         task.resume()
-
-        if let loginError {
-            throw loginError
-        } else {
-            loginStatus = .loggedIn
-        }
-
 
     }
 
