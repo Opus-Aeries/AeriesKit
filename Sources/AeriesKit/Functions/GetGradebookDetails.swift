@@ -35,7 +35,7 @@ extension AeriesKit {
 
             let regex = AeriesRegexGradebook(sourceText: dataString)
             Task {
-                await completion(.success(regex.returnFinalGradebook()))
+                await completion(.success(regex.returnFinalGradebook(extraPrint: extraPrint)))
             }
 
         }.resume()
@@ -49,10 +49,6 @@ extension AeriesKit {
         public init(sourceText: String) {
             self.sourceText = sourceText
             self.sourceTextCount = sourceText.count
-        }
-
-        func makeSearch(_ start: String, _ end: String, type: String = ".") -> String {
-            return "(?<=\(start))(\(type)*?)(?=\(end))"
         }
 
         func makeSearchRevised(_ start: String, _ end: String, segment: String, length: Int? = nil, type: String = ".") -> String {
@@ -112,36 +108,27 @@ extension AeriesKit {
             return data.split(using: "(</tr>)".r!)
         }
 
-        func segmentToGradebook(_ segment: String) -> AeriesGradeBookEntry {
+        func segmentToGradebook(_ segment: String, extraPrint: Bool = false) -> AeriesGradeBookEntry {
             let segmentLength = segment.count
-            var number = 99999
-            var description = ""
-            var category = ""
-            var score: AeriesScore? = nil
-            var correct: AeriesScore? = nil
-            var percent: String? = nil
-            var comment: String? = nil
-            var dateCompleted: String? = nil
-            var dueDate: String? = nil
-            var gradingComplete = false
+            var finalResult = AeriesGradeBookEntry(number: 999, description: "", category: "", gradingComplete: false)
 
+            if extraPrint{ print(0) }
             // Find Number and Description
             let nameSearch = "<div class=\"TextHeading\">"
             let result = makeSearchRevised(nameSearch, searchEnd, segment: segment, length: segmentLength)
-            print(result)
+            if extraPrint{ print(result) }
             let items = result.components(separatedBy: " - ")
 
-            number = Int(items[0])!
-            description = items[1]
-            print(0)
+            finalResult.number = Int(items[0])!
+            finalResult.description = items[1]
 
             // Find Category
-            print(1)
-            category = makeSearchRevised(categorySearch, searchEnd, segment: segment, length: segmentLength)
+            if extraPrint{ print(1) }
+            finalResult.category = makeSearchRevised(categorySearch, searchEnd, segment: segment, length: segmentLength)
 
 
             // Find Score
-            print(2)
+            if extraPrint{ print(2) }
             let first1: Int? = Int(makeSearchRevised(
                 "<span style='white-space:nowrap;'>",
                 "</span>",
@@ -159,12 +146,12 @@ extension AeriesKit {
             ))
 
             if first1 != nil && last1 != nil {
-                score = AeriesScore(pointsReceived: first1!, pointsPossible: last1!)
+                finalResult.score = AeriesScore(pointsReceived: first1!, pointsPossible: last1!)
             }
 
 
             // Find Correct
-            print(3)
+            if extraPrint{ print(3) }
             let first2: Int? = Int(makeSearchRevised(
                 "<span style=\"white-space:nowrap;\">",
                 "</span>",
@@ -183,54 +170,46 @@ extension AeriesKit {
             ))
 
             if first2 != nil && last2 != nil {
-                correct = AeriesScore(pointsReceived: first2!, pointsPossible: last2!)
+                finalResult.correct = AeriesScore(pointsReceived: first2!, pointsPossible: last2!)
             }
 
-
-
             // Find Percent
-            print(4)
-            percent = makeSearchRevised( percentSearch(number), "</span>", segment: segment, length: segmentLength)
+            if extraPrint{ print(4) }
+            finalResult.percent = makeSearchRevised(
+                percentSearch(finalResult.number),
+                "</span>",
+                segment: segment,
+                length: segmentLength
+            )
 
             // Find Comment
-            print(5)
-            comment = makeSearchRevised(commentSearch, searchEnd, segment: segment, length: segmentLength)
+            if extraPrint{ print(5) }
+            finalResult.comment = makeSearchRevised(commentSearch, searchEnd, segment: segment, length: segmentLength)
 
             // Find Date Completed
-            print(6)
-            dateCompleted = makeSearchRevisedCustom(
+            if extraPrint{ print(6) }
+            finalResult.dateCompleted = makeSearchRevisedCustom(
                 "(?<=<span class=\"TextSubSection\">Date Completed:</span> )[^\n\r]*", segment: segment, length: segmentLength
             )
 
             // Find Date Due
-            print(7)
-            dueDate = makeSearchRevisedCustom(
+            if extraPrint{ print(7) }
+            finalResult.dueDate = makeSearchRevisedCustom(
                 "(?<=<span class=\"TextSubSection\" style=\"min-width: 90px;\">Due Date:</span> )[^\n\r]*", segment: segment, length: segmentLength
             )
             // Find Grading Completed
-            print(8)
+            if extraPrint{ print(8) }
             let grading = makeSearchRevisedCustom(
                 "(?<=<span class=\"TextSubSection\">Grading Complete:</span> )[^\n\r]*", segment: segment, length: segmentLength
             )
             if grading == "True" {
-                gradingComplete = true
+                finalResult.gradingComplete = true
             }
 
-            return AeriesGradeBookEntry(
-                number: number,
-                description: description,
-                category: category,
-                score: score,
-                correct: correct,
-                percent: percent,
-                comment: comment,
-                dateCompleted: dateCompleted,
-                dueDate: dueDate,
-                gradingComplete: gradingComplete
-            )
+            return finalResult
         }
 
-        func returnFinalGradebook() async -> [AeriesGradeBookEntry] {
+        func returnFinalGradebook(extraPrint: Bool) async -> [AeriesGradeBookEntry] {
             var finalGradebook: [AeriesGradeBookEntry] = []
             let segments = splitDataToSegments(sourceText)
 
@@ -238,7 +217,7 @@ extension AeriesKit {
             for segment in segments {
                 if segment.contains("tinymode FullWidth CardView")
                     && segment.contains("<div class=\"TextSubSectionCategory\"><i class=\"fa fa-file-text-o\" title=\"Formative\" aria-hidden=\"true\"></i>"){
-                    print("\n\n\ngetting")
+                    if extraPrint { print("\n\n\ngetting") }
                     finalGradebook.append(segmentToGradebook(segment))
                 }
             }
