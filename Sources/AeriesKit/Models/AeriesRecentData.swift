@@ -1,6 +1,6 @@
 import Foundation
 
-struct AeriesRecentData: Codable, Hashable {
+public struct AeriesRecentData: Codable, Hashable {
     public var section: String
 
     public var STUSC: String
@@ -18,7 +18,7 @@ struct AeriesRecentData: Codable, Hashable {
         case STUSC
         case STUSN
         case title = "Title"
-        case details = "details"
+        case details = "Details"
         case DTS
     }
 

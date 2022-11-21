@@ -9,7 +9,8 @@ extension AeriesKit {
     public mutating func login(
         email: String,
         password: String,
-        completion: @escaping (Result<Void, Error>) -> Void
+        extraPrint: Bool = false,
+        completion: @escaping (Result<[AeriesRecentData], Error>) -> ()
     ) {
 
         guard let url = URL(string: "\(baseUrl)Student/LoginParent.aspx") else {
@@ -102,7 +103,17 @@ extension AeriesKit {
                     finalResult.removeLast()
                 }
 
-                completion(.success(()))
+                if extraPrint {
+                    print(finalResult)
+                }
+
+                do {
+                    let serverData = try JSONDecoder().decode([AeriesRecentData].self, from: finalResult.data(using: .utf8) ?? Data())
+                    completion(.success(serverData))
+                } catch {
+                    completion(.failure(error))
+                }
+
             } else if dataString.contains("502 Bad Gateway"){
                 completion(.failure(AeriesError.aeries502))
             }  else {

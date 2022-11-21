@@ -41,7 +41,7 @@ extension AeriesKit {
         }.resume()
     }
 
-    public struct AeriesRegexGradebook {
+    private struct AeriesRegexGradebook {
 
         let sourceText: String
         let sourceTextCount: Int
@@ -230,7 +230,7 @@ extension AeriesKit {
             )
         }
 
-        public func returnFinalGradebook() async -> [AeriesGradeBookEntry] {
+        func returnFinalGradebook() async -> [AeriesGradeBookEntry] {
             var finalGradebook: [AeriesGradeBookEntry] = []
             let segments = splitDataToSegments(sourceText)
 
