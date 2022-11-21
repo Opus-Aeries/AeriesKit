@@ -10,6 +10,9 @@ extension AeriesKit {
         case unableToMakeUrl
         /// Sometimes Aeries server decides to return a 503 error
         case aeries502
+        /// Unable to decode a link to the gradebook for a ``AeriesClassSummary`` object
+        case unableToDecodeGradebookLink
+
         /// Unknown Error
         case unknown
 
@@ -23,6 +26,8 @@ extension AeriesKit {
                 return nil
             case .aeries502:
                 return NSLocalizedString("The Aeries server returned (502) Bad Gateway.", comment: "")
+            case .unableToDecodeGradebookLink:
+                return NSLocalizedString("Could not decode a link for this gradebook", comment: "")
             case .unknown:
                 return NSLocalizedString("An unknown error occurred.", comment: "")
             }

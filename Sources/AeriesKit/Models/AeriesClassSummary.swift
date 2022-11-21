@@ -1,13 +1,16 @@
 import Foundation
+import RegexBuilder
 
 /// An overview of a class
-public struct AeriesClassSummary: Codable, Hashable {
+public struct AeriesClassSummary: Decodable, Hashable {
     /// The room in which the class is located
     public var roomNumber: String
     /// The name of the class
     public var courseName: String
     /// The name of the teacher
     public var teacherName: String
+    /// The postfix of a link to the gradebook detail page
+    public var gradebookLink: String?
     /// The percent that the student currently has in the class
     public var percent: String
     /// The current letter grade that the student has in the class
@@ -37,6 +40,7 @@ public struct AeriesClassSummary: Codable, Hashable {
         case roomNumber = "RoomNumber"
         case courseName = "CourseName"
         case teacherName = "TeacherName"
+        case gradeBook = "Gradebook"
         case percent = "Percent"
         case currentMark = "CurrentMark"
         case currentMarkAndScore = "CurrentMarkAndScore"
@@ -56,6 +60,7 @@ public struct AeriesClassSummary: Codable, Hashable {
         roomNumber: String,
         courseName: String,
         teacherName: String,
+        gradeBookLink: String,
         percent: String,
         currentMark: String,
         currentMarkAndScore: String,
@@ -72,6 +77,7 @@ public struct AeriesClassSummary: Codable, Hashable {
         self.roomNumber = roomNumber
         self.courseName = courseName
         self.teacherName = teacherName
+        self.gradebookLink = gradeBookLink
         self.percent = percent
         self.currentMark = currentMark
         self.currentMarkAndScore = currentMarkAndScore
@@ -92,6 +98,7 @@ public struct AeriesClassSummary: Codable, Hashable {
         self.roomNumber = try container.decode(String.self, forKey: .roomNumber)
         self.courseName = try container.decode(String.self, forKey: .courseName)
         self.teacherName = try container.decode(String.self, forKey: .teacherName)
+        self.gradebookLink = determineGradebookLink(try container.decode(String.self, forKey: .gradeBook))
         self.percent = try container.decode(String.self, forKey: .percent)
         self.currentMark = try container.decode(String.self, forKey: .currentMark)
         self.currentMarkAndScore = try container.decode(String.self, forKey: .currentMarkAndScore)
@@ -104,5 +111,50 @@ public struct AeriesClassSummary: Codable, Hashable {
         self.schoolName = try container.decode(String.self, forKey: .schoolName)
         self.districtName = try container.decode(String.self, forKey: .districtName)
         self.periodTitle = try container.decode(String.self, forKey: .periodTitle)
+
+        /// Decodes the actual url path from the returned data
+        /// - Parameter original: The original value returned by the server
+        /// - Returns: A properly formatted url path
+        func determineGradebookLink(_ original: String) -> String? {
+
+            let part1 = Reference(Substring.self)
+            let part2 = Reference(Substring.self)
+            let part3 = Reference(Substring.self)
+            let part4 = Reference(Substring.self)
+
+            let search = Regex {
+                "a class=\"GradebookLink\" href=\""
+                Capture(as: part1) {
+                    OneOrMore(.anyNonNewline)
+                }
+
+                "&amp;Term="
+                Capture(as: part2) {
+                    OneOrMore(.anyNonNewline)
+                }
+
+                "&amp;CDS="
+                Capture(as: part3) {
+                    OneOrMore(.digit)
+                }
+
+                "&amp;SC="
+                Capture(as: part4) {
+                    OneOrMore(.digit)
+                }
+
+                "\">"
+
+            }
+
+            if let result = original.firstMatch(of: search) {
+                return "\(result[part1])&Term=\(result[part2])&CDS=\(result[part3])&SC=\(result[part4])"
+            } else {
+                return nil
+            }
+
+        }
     }
+
+
 }
