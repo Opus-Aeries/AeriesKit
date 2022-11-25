@@ -14,6 +14,7 @@ let package = Package(
         .library(
             name: "AeriesKit",
             targets: ["AeriesKit"]),
+        .executable(name: "AeriesKitExec", targets: ["AeriesKitExec"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -25,6 +26,9 @@ let package = Package(
         .target(
             name: "AeriesKit",
             dependencies: []),
+        .executableTarget(
+            name: "AeriesKitExec",
+            dependencies: ["AeriesKit"]),
         .testTarget(
             name: "AeriesKitTests",
             dependencies: ["AeriesKit"]),

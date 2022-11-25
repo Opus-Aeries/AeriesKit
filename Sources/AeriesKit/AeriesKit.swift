@@ -1,3 +1,3 @@
 import Foundation
 
-public protocol AeriesData: Decodable, Hashable {}
+public protocol AKData: Decodable, Hashable {}

@@ -1,54 +1,39 @@
 import Foundation
 
-/// Represents an assignment shown in ``AeriesLandingData``
-public struct AeriesLandingAssignment: AeriesData {
-    ///
+/// Represents an assignment shown in ``AKLandingData``
+public struct AKLandingAssignment: AKData {
     public var assignedDate: String
-    ///
     public var assignmentName: String
+    /// The assignment's unique number.
     ///
+    /// Assignment numbers are unique to each gradebook and
+    /// assignments are sorted by their numbers from lowest (first created)
+    /// to highest (last created).
     public var assignmentNumber: Int
-    ///
     public var categoryDescription: String
+    /// The teacher's comment on the assignment
     ///
+    /// If there is no comment the JSON will return
+    /// a string with a whitespace character `" "`
     public var comment: String
-    ///
     public var dueDate: String
-    ///
     public var gradeBookName: String
-    ///
     public var gradeBookNumber: Int
-    ///
     public var gradingCompleted: Bool
-    ///
     public var gradingCompletedDate: String
-    ///
     public var isExtraCredit: Bool
-    ///
     public var isMissing: Bool
-    ///
     public var lastUpdated: String
-    ///
     public var mark: String
-    ///
     public var maxNumberCorrect: Double
-    ///
     public var maxScore: Double
-    ///
     public var numberCorrect: Double
-    ///
     public var percentage: Double
-    ///
     public var period: String
-    ///
     public var periodTitle: String
-    ///
     public var rubricAssignment: Bool
-    ///
     public var schoolCode: Int
-    ///
     public var score: Double
-    ///
     public var status: String
 
     enum CodingKeys: String, CodingKey {

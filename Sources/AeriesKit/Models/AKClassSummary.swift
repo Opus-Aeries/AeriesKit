@@ -1,7 +1,7 @@
 import Foundation
 
 /// Represents the overview and general details of a class
-public struct AeriesClassSummary: AeriesData {
+public struct AKClassSummary: AKData {
     /// An identifier for the class used by the Aeries API
     public var period: Int
     /// The date on which the class started

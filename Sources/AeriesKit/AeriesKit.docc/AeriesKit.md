@@ -1,6 +1,6 @@
 # ``AeriesKit``
 
-Unofficially access the Aeries mobile data API.
+Unofficially access the Aeries mobile data API. Brought to you by Opus-Aeries
 
 ## Overview
 
@@ -18,10 +18,15 @@ Use AeriesKit to power your mobile apps that access the API.
 
 ### Landing Data
 
-- ``AeriesLandingData``
-- ``AeriesLandingAssignment``
-- ``AeriesLandingClassSchedule``
+- ``AKLandingData``
+- ``AKLandingAssignment``
+- ``AKLandingClassSchedule``
+
+### Grades Service
+- ``AKAssignment``
+- ``AKAssignmentCategory``
+- ``AKGradebook``
 
 ### Miscellaneous
-
-- ``AeriesData``
+- ``AKClassSummary``
+- ``AKData``
