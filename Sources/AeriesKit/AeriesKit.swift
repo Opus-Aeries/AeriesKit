@@ -9,10 +9,26 @@ public enum AeriesKit {
     }
 }
 
-#warning("Add Docs")
-/// The interface for the actual Aeries mobile API
-///
-/// ## Making a Request
+/** The interface for the actual Aeries mobile API
+## Making a Request
+ Any request can be made by using an asynchronous call. For example, to process a request the following code could be used:
+```swift
+func requestHomeScreenData() async {
+    await aeries.requestHomeScreenData { result in
+        switch result {
+        case .success(let success):
+            print(success)
+            DispatchQueue.main.async {
+                // Assign Data
+            }
+        case .failure(let failure):
+            print(failure)
+            // Handle Error
+        }
+    }
+}
+```
+*/
 public struct AKConnection {
     let config: AKConfiguration
 
@@ -21,28 +37,14 @@ public struct AKConnection {
         self.config = config
     }
 
-    public func requestHomeScreenData(completion:@escaping(Result<AKLandingData,Error>) -> ()) async {
-        await requestJsonData(
-            endpoint: "student/\(config.studentId)/homescreendata/",
-            model: AKLandingData.self
-        ) { result in
-            switch result {
-            case .success(let success):
-                completion(.success(success))
-            case .failure(let failure):
-                completion(.failure(failure))
-            }
-        }
-    }
-
     func requestJsonData<T: Decodable>(
         endpoint: String,
         model: T.Type,
-        extraPrint: Bool = false,
+        extraPrint: Bool = true,
         completion:@escaping(Result<T,Error>) -> ()
     ) async {
         guard let url = URL(string: "\(config.baseUrl)Student/mobileapi/v1/\(endpoint)") else {
-            completion(.failure(AeriesError.unableToMakeUrl))
+            completion(.failure(AKError.unableToMakeUrl))
             return
         }
 
@@ -50,6 +52,7 @@ public struct AKConnection {
 
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(config.token)", forHTTPHeaderField: "Authorization")
 
         URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard let data = data else {
@@ -86,7 +89,9 @@ public struct AKConfiguration {
     ///"https://demo.aeries.net/"
     /// ```
     public var baseUrl: String
+    /// The user's long-lived Aeries access token
     public var token: String
+    /// The user's student ID of the respective school
     public var studentId: String
 
     /// Create from data

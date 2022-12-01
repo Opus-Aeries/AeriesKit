@@ -16,6 +16,11 @@ Use AeriesKit to power your mobile apps that access the API.
 
 ## Topics
 
+### Getting Started
+- <doc:SettingUp>
+- ``AKConnection``
+- ``AKConfiguration``
+
 ### Landing Data
 
 - ``AKLandingData``
@@ -27,9 +32,12 @@ Use AeriesKit to power your mobile apps that access the API.
 - ``AKAssignmentCategory``
 - ``AKGradebook``
 
-### Package Services
-- ``AKConnection``
+### Requests
+- ``AKConnection/requestHomeScreenData(completion:)``
+- ``AKConnection/requestGradebookDetails(schoolCode:gradebookNumber:termCode:completion:)``
 
 ### Miscellaneous
 - ``AKClassSummary``
 - ``AKData``
+- ``AKError``
+- <doc:AeriesKit>

@@ -7,7 +7,7 @@ public struct AKLandingClassSchedule: AKData {
     /// The specific identifier for the user's school
     public var schoolCode: Int
     /// The name of the user's school
-    public var schoolName: Bool
+    public var schoolName: String
     /// If the app should show the current period
     public var showPeriod: Bool
     /// The user's student id number.
@@ -25,7 +25,7 @@ public struct AKLandingClassSchedule: AKData {
     public init(
         classSummary: [AKClassSummary],
         schoolCode: Int,
-        schoolName: Bool,
+        schoolName: String,
         showPeriod: Bool,
         studentId: Int
     ) {
@@ -41,7 +41,7 @@ public struct AKLandingClassSchedule: AKData {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.classSummary = try container.decode([AKClassSummary].self, forKey: .classSummary)
         self.schoolCode = try container.decode(Int.self, forKey: .schoolCode)
-        self.schoolName = try container.decode(Bool.self, forKey: .schoolName)
+        self.schoolName = try container.decode(String.self, forKey: .schoolName)
         self.showPeriod = try container.decode(Bool.self, forKey: .showPeriod)
         self.studentId = try container.decode(Int.self, forKey: .studentId)
     }

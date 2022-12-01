@@ -51,7 +51,7 @@ public struct AKAssignment: AKData {
     /// The date the assignment was due
     public var dueDate: String
     /// The date the assignment grade was completed
-    public var dateCompleted: String
+    public var dateCompleted: String?
     /// The teacher's comment on the assignment
     ///
     /// If there is no comment the JSON will return
@@ -100,7 +100,7 @@ public struct AKAssignment: AKData {
         percent: Double,
         dateAssigned: String,
         dueDate: String,
-        dateCompleted: String,
+        dateCompleted: String? = nil,
         comment: String,
         description: String
     ) {
@@ -142,7 +142,7 @@ public struct AKAssignment: AKData {
         self.percent = try container.decode(Double.self, forKey: .percent)
         self.dateAssigned = try container.decode(String.self, forKey: .dateAssigned)
         self.dueDate = try container.decode(String.self, forKey: .dueDate)
-        self.dateCompleted = try container.decode(String.self, forKey: .dateCompleted)
+        self.dateCompleted = try container.decodeIfPresent(String.self, forKey: .dateCompleted)
         self.comment = try container.decode(String.self, forKey: .comment)
         self.description = try container.decode(String.self, forKey: .description)
     }

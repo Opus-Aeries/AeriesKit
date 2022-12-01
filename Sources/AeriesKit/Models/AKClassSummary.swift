@@ -36,7 +36,7 @@ public struct AKClassSummary: AKData {
     /// The code for the current term
     public var termCode: String
     /// The date the gradebook was last updated
-    public var lastUpdated: String
+    public var lastUpdated: String?
     /// The name of the class's period
     public var periodTitle: String
 
@@ -79,7 +79,7 @@ public struct AKClassSummary: AKData {
         missingAssignmentCount: Int,
         term: String,
         termCode: String,
-        lastUpdated: String,
+        lastUpdated: String?,
         periodTitle: String
     ) {
         self.period = period
@@ -121,7 +121,7 @@ public struct AKClassSummary: AKData {
         self.missingAssignmentCount = try container.decode(Int.self, forKey: .missingAssignmentCount)
         self.term = try container.decode(String.self, forKey: .term)
         self.termCode = try container.decode(String.self, forKey: .termCode)
-        self.lastUpdated = try container.decode(String.self, forKey: .lastUpdated)
+        self.lastUpdated = try container.decodeIfPresent(String.self, forKey: .lastUpdated)
         self.periodTitle = try container.decode(String.self, forKey: .periodTitle)
     }
 

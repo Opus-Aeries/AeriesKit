@@ -9,7 +9,7 @@ public struct AKLandingData: AKData {
     /// A list of assignments that are not graded yet but are still entered into the gradebook
     public var upcomingAssignments: [AKLandingAssignment]
     /// A list of class summary items. This contains preliminary data for showing a schedule or gradebook details
-    public var classSummaryData: AKLandingClassSchedule
+    public var classSummaryData: [AKLandingClassSchedule]
     /// The status message that the server returned. If there are no errors it will be `"success"`
     public var status: String
 
@@ -24,7 +24,7 @@ public struct AKLandingData: AKData {
     public init(
         recentChanges: [AKLandingAssignment],
         upcomingAssignments: [AKLandingAssignment],
-        classSummaryData: AKLandingClassSchedule,
+        classSummaryData: [AKLandingClassSchedule],
         status: String
     ) {
         self.recentChanges = recentChanges
@@ -38,7 +38,7 @@ public struct AKLandingData: AKData {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.recentChanges = try container.decode([AKLandingAssignment].self, forKey: .recentChanges)
         self.upcomingAssignments = try container.decode([AKLandingAssignment].self, forKey: .upcomingAssignments)
-        self.classSummaryData = try container.decode(AKLandingClassSchedule.self, forKey: .classSummaryData)
+        self.classSummaryData = try container.decode([AKLandingClassSchedule].self, forKey: .classSummaryData)
         self.status = try container.decode(String.self, forKey: .status)
     }
 

@@ -6,7 +6,7 @@ import Foundation
 /// the assignments that are included in it.
 public struct AKAssignmentCategory: AKData {
     /// The name of this category
-    public var name: Int
+    public var name: String
     /// The number of assignments that belong to this category
     public var numberOfAssignments: Int
     /// The letter grade that the user has in the category.
@@ -14,9 +14,9 @@ public struct AKAssignmentCategory: AKData {
     /// Can be just a letter (`A`) or a letter and sign (`B-`)
     public var mark: String
     /// The number of points earned in the category
-    public var pointsEarned: Int
+    public var pointsEarned: Double
     /// The number of points possible in the category
-    public var pointsPossible: Int
+    public var pointsPossible: Double
     /// The user's percentage in the category
     public var percent: Double
 
@@ -31,11 +31,11 @@ public struct AKAssignmentCategory: AKData {
 
     /// Create from data
     public init(
-        name: Int,
+        name: String,
         numberOfAssignments: Int,
         mark: String,
-        pointsEarned: Int,
-        pointsPossible: Int,
+        pointsEarned: Double,
+        pointsPossible: Double,
         percent: Double
     ) {
         self.name = name
@@ -49,11 +49,11 @@ public struct AKAssignmentCategory: AKData {
     /// Decode from JSON
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.name = try container.decode(Int.self, forKey: .name)
+        self.name = try container.decode(String.self, forKey: .name)
         self.numberOfAssignments = try container.decode(Int.self, forKey: .numberOfAssignments)
         self.mark = try container.decode(String.self, forKey: .mark)
-        self.pointsEarned = try container.decode(Int.self, forKey: .pointsEarned)
-        self.pointsPossible = try container.decode(Int.self, forKey: .pointsPossible)
+        self.pointsEarned = try container.decode(Double.self, forKey: .pointsEarned)
+        self.pointsPossible = try container.decode(Double.self, forKey: .pointsPossible)
         self.percent = try container.decode(Double.self, forKey: .percent)
     }
 }
