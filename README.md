@@ -17,6 +17,8 @@ If you have any problems or questions regarding AeriesKit, please open an issue.
 
 # How to Use
 
+Full documentation can be found [here](https://opus-aeries.github.io/AeriesKit/documentation/aerieskit/)
+
 ## Swift Package Manager
 
 To integrate using Apple's Swift Package Manager, add the following as a dependency to your Package.swift:
