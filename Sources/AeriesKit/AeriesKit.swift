@@ -75,10 +75,6 @@ public struct AKConnection {
 }
 
 /// The configuration for the AeriesKit instance
-///
-/// ## Topics
-/// ### Related
-/// - ``AKConnection``
 public struct AKConfiguration {
     /// The base url of the Aeries portal.
     ///

@@ -21,23 +21,23 @@ Use AeriesKit to power your mobile apps that access the API.
 - ``AKConnection``
 - ``AKConfiguration``
 
-### Landing Data
-
-- ``AKLandingData``
-- ``AKLandingAssignment``
-- ``AKLandingClassSchedule``
-
-### Grades Service
-- ``AKAssignment``
-- ``AKAssignmentCategory``
-- ``AKGradebook``
-
 ### Requests
 - ``AKConnection/requestHomeScreenData(completion:)``
 - ``AKConnection/requestGradebookDetails(schoolCode:gradebookNumber:termCode:completion:)``
 
-### Miscellaneous
+### Models
+- ``AKAttendance``
+- ``AKAttendanceDetail``
+- ``AKLandingData``
+- ``AKLandingAssignment``
+- ``AKLandingClassSchedule``
+- ``AKAssignment``
+- ``AKAssignmentCategory``
+- ``AKGradebook``
 - ``AKClassSummary``
+
+
+### Miscellaneous
 - ``AKData``
 - ``AKError``
 - <doc:AeriesKit>
