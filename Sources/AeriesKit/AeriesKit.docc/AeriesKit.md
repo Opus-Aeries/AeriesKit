@@ -27,6 +27,9 @@ Use AeriesKit to power your mobile apps that access the API.
 - ``AKAssignmentCategory``
 - ``AKGradebook``
 
+### Package Services
+- ``AKConnection``
+
 ### Miscellaneous
 - ``AKClassSummary``
 - ``AKData``
