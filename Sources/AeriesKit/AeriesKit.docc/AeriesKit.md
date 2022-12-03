@@ -24,6 +24,7 @@ Use AeriesKit to power your mobile apps that access the API.
 ### Requests
 - ``AKConnection/requestHomeScreenData(completion:)``
 - ``AKConnection/requestGradebookDetails(schoolCode:gradebookNumber:termCode:completion:)``
+- ``AKConnection/requestAttendanceData(schoolCode:completion:)``
 
 ### Models
 - ``AKAttendance``
